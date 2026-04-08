@@ -1,0 +1,173 @@
+{% extends 'pharmacy/base.html' %}
+{% load pharmacy_tags %}
+
+{% comment %}
+============================================================
+Liste des médicaments — Application de Gestion de Pharmacie
+============================================================
+Affiche un tableau de tous les médicaments avec :
+- Barre de recherche par nom
+- Filtres rapides (expirés, stock faible, expire bientôt)
+- Badges visuels pour le statut (expiré, stock faible)
+- Boutons d'action (détail, modifier, supprimer)
+- Le bouton "Supprimer" est masqué pour les Employés
+============================================================
+{% endcomment %}
+
+{% block title %}Médicaments{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-capsule me-2"></i>Liste des médicaments
+        </h1>
+        <p class="text-muted mb-0">Gérez votre inventaire de médicaments.</p>
+    </div>
+    <a href="{% url 'pharmacy:medicament_create' %}" class="btn btn-primary-custom" id="btn_add_medicament">
+        <i class="bi bi-plus-circle me-1"></i> Ajouter un médicament
+    </a>
+</div>
+
+<!-- ============================================================ -->
+<!-- BARRE DE RECHERCHE ET FILTRES                                 -->
+<!-- ============================================================ -->
+<div class="card custom-card mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <!-- Barre de recherche -->
+            <div class="col-md-6">
+                <form method="get" class="d-flex gap-2" id="form_search_medicament">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="q" class="form-control" 
+                               placeholder="Rechercher un médicament..." 
+                               value="{{ recherche }}" id="input_search">
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom">Rechercher</button>
+                </form>
+            </div>
+            <!-- Filtres rapides -->
+            <div class="col-md-6">
+                <div class="d-flex gap-2 flex-wrap justify-content-md-end">
+                    <a href="{% url 'pharmacy:medicament_list' %}" 
+                       class="btn btn-sm {% if not filtre_actif %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                        <i class="bi bi-grid me-1"></i> Tous
+                    </a>
+                    <a href="?filtre=stock_faible" 
+                       class="btn btn-sm {% if filtre_actif == 'stock_faible' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Stock faible
+                    </a>
+                    <a href="?filtre=expire_bientot" 
+                       class="btn btn-sm {% if filtre_actif == 'expire_bientot' %}btn-info{% else %}btn-outline-info{% endif %}">
+                        <i class="bi bi-clock me-1"></i> Expire bientôt
+                    </a>
+                    <a href="?filtre=expires" 
+                       class="btn btn-sm {% if filtre_actif == 'expires' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                        <i class="bi bi-calendar-x me-1"></i> Expirés
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLEAU DES MÉDICAMENTS                                       -->
+<!-- ============================================================ -->
+<div class="card custom-card">
+    <div class="card-body p-0">
+        {% if medicaments %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="table_medicaments">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom</th>
+                        <th>Prix (DH)</th>
+                        <th>Stock</th>
+                        <th>Date d'expiration</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for med in medicaments %}
+                    <tr class="{% if med.est_expire %}table-danger-light{% elif med.stock_faible %}table-warning-light{% endif %}">
+                        <td class="text-muted">{{ forloop.counter }}</td>
+                        <td>
+                            <a href="{% url 'pharmacy:medicament_detail' med.pk %}" 
+                               class="fw-semibold text-decoration-none">
+                                {{ med.nom }}
+                            </a>
+                        </td>
+                        <td>{{ med.prix|floatformat:2 }}</td>
+                        <td>
+                            {% if med.stock_faible %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>{{ med.stock }}
+                                </span>
+                            {% elif med.stock == 0 %}
+                                <span class="badge bg-danger">Rupture</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ med.stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ med.date_expiration|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if med.est_expire %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i>Expiré
+                                </span>
+                            {% elif med.expire_bientot %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-clock me-1"></i>Expire bientôt
+                                </span>
+                            {% else %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Valide
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <!-- Bouton Détail -->
+                                <a href="{% url 'pharmacy:medicament_detail' med.pk %}" 
+                                   class="btn btn-sm btn-outline-primary" title="Détail">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <!-- Bouton Modifier -->
+                                <a href="{% url 'pharmacy:medicament_update' med.pk %}" 
+                                   class="btn btn-sm btn-outline-secondary" title="Modifier">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <!-- Bouton Supprimer — ADMIN UNIQUEMENT -->
+                                {% if user|is_admin %}
+                                <a href="{% url 'pharmacy:medicament_delete' med.pk %}" 
+                                   class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-capsule fs-1"></i>
+            <p class="mt-2 mb-0">Aucun médicament trouvé.</p>
+            {% if recherche or filtre_actif %}
+            <a href="{% url 'pharmacy:medicament_list' %}" class="btn btn-outline-primary mt-3">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Réinitialiser les filtres
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

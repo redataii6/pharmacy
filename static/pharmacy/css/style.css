@@ -1,0 +1,502 @@
+/*
+============================================================
+Styles personnalisés — Application PharmaGest
+============================================================
+Ce fichier contient les styles CSS personnalisés qui complètent
+Bootstrap 5. Utilise des variables CSS pour la cohérence du thème.
+============================================================
+*/
+
+/* ============================================================
+   VARIABLES CSS — Palette de couleurs
+   ============================================================ */
+:root {
+    /* Couleurs principales */
+    --primary: #0d6efd;
+    --primary-dark: #0a58ca;
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    /* Couleurs de la pharmacie */
+    --pharma-green: #10b981;
+    --pharma-green-dark: #059669;
+    --pharma-teal: #14b8a6;
+    --pharma-blue: #3b82f6;
+
+    /* Couleurs de la navbar et sidebar */
+    --navbar-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    --sidebar-bg: #f8fafc;
+    --sidebar-border: #e2e8f0;
+    --sidebar-hover: #eef2ff;
+    --sidebar-active: #e0e7ff;
+    --sidebar-active-text: #4338ca;
+
+    /* Dimensions */
+    --sidebar-width: 260px;
+    --navbar-height: 64px;
+
+    /* Typographie */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Ombres */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+
+    /* Transitions */
+    --transition: all 0.2s ease;
+}
+
+/* ============================================================
+   RESET ET BASE
+   ============================================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: #f1f5f9;
+    color: #334155;
+    min-height: 100vh;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.bg-navbar {
+    background: var(--navbar-bg) !important;
+    backdrop-filter: blur(10px);
+    height: var(--navbar-height);
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    letter-spacing: -0.025em;
+}
+
+.navbar-brand i {
+    color: var(--pharma-green);
+}
+
+.user-avatar {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.main-wrapper {
+    display: flex;
+    min-height: 100vh;
+    padding-top: var(--navbar-height);
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    min-height: calc(100vh - var(--navbar-height));
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    bottom: 0;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.sidebar-nav {
+    padding: 1.5rem 0;
+}
+
+.sidebar-header {
+    padding: 0.5rem 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+}
+
+.sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1.5rem;
+    color: #475569;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    border-left: 3px solid transparent;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--sidebar-hover);
+    color: var(--sidebar-active-text);
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--sidebar-active);
+    color: var(--sidebar-active-text);
+    border-left-color: var(--sidebar-active-text);
+    font-weight: 600;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.15rem;
+    width: 1.5rem;
+    text-align: center;
+}
+
+/* ============================================================
+   CONTENU PRINCIPAL
+   ============================================================ */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    max-width: calc(100% - var(--sidebar-width));
+}
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    padding: 1rem;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 1.25rem;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-lg);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    width: 70px;
+    height: 70px;
+    background: var(--primary-gradient);
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.login-logo i {
+    font-size: 2rem;
+    color: white;
+}
+
+.login-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.03em;
+}
+
+.login-subtitle {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* ============================================================
+   BOUTONS PERSONNALISÉS
+   ============================================================ */
+.btn-primary-custom {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1.25rem;
+    border-radius: 0.5rem;
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary-custom:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* ============================================================
+   CARTES PERSONNALISÉES
+   ============================================================ */
+.custom-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    background: white;
+}
+
+.custom-card .card-header {
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+}
+
+/* ============================================================
+   EN-TÊTE DE PAGE
+   ============================================================ */
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: -0.025em;
+}
+
+/* ============================================================
+   CARTES DE STATISTIQUES
+   ============================================================ */
+.stat-card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 1px solid #e2e8f0;
+    background: white;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card-body {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+}
+
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #1e293b;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.stat-card-footer {
+    display: block;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+/* Variantes de couleur des stat-cards */
+.stat-card-primary .stat-icon { background: #ede9fe; color: #7c3aed; }
+.stat-card-primary .stat-card-footer { background: #f5f3ff; color: #7c3aed; }
+.stat-card-primary .stat-card-footer:hover { background: #ede9fe; }
+
+.stat-card-warning .stat-icon { background: #fef3c7; color: #d97706; }
+.stat-card-warning .stat-card-footer { background: #fffbeb; color: #d97706; }
+.stat-card-warning .stat-card-footer:hover { background: #fef3c7; }
+
+.stat-card-danger .stat-icon { background: #fee2e2; color: #dc2626; }
+.stat-card-danger .stat-card-footer { background: #fef2f2; color: #dc2626; }
+.stat-card-danger .stat-card-footer:hover { background: #fee2e2; }
+
+.stat-card-info .stat-icon { background: #e0f2fe; color: #0284c7; }
+.stat-card-info .stat-card-footer { background: #f0f9ff; color: #0284c7; }
+.stat-card-info .stat-card-footer:hover { background: #e0f2fe; }
+
+.stat-card-success .stat-icon { background: #d1fae5; color: #059669; }
+.stat-card-success .stat-card-footer { background: #ecfdf5; color: #059669; }
+.stat-card-success .stat-card-footer:hover { background: #d1fae5; }
+
+.stat-card-purple .stat-icon { background: #f3e8ff; color: #9333ea; }
+.stat-card-purple .stat-card-footer { background: #faf5ff; color: #9333ea; }
+.stat-card-purple .stat-card-footer:hover { background: #f3e8ff; }
+
+.stat-card-teal .stat-icon { background: #ccfbf1; color: #0d9488; }
+.stat-card-teal .stat-card-footer { background: #f0fdfa; color: #0d9488; }
+.stat-card-teal .stat-card-footer:hover { background: #ccfbf1; }
+
+.stat-card-gold .stat-icon { background: #fef9c3; color: #ca8a04; }
+.stat-card-gold .stat-card-footer { background: #fefce8; color: #ca8a04; }
+.stat-card-gold .stat-card-footer:hover { background: #fef9c3; }
+
+/* ============================================================
+   TABLEAU
+   ============================================================ */
+.table thead th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 0.85rem 1rem;
+    white-space: nowrap;
+}
+
+.table tbody td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.table-danger-light {
+    background-color: #fff5f5 !important;
+}
+
+.table-warning-light {
+    background-color: #fffbeb !important;
+}
+
+/* ============================================================
+   PAGE DE DÉTAIL
+   ============================================================ */
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+/* Badges de statut */
+.status-badge {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+}
+
+.status-expired { background: #fef2f2; color: #dc2626; }
+.status-out-of-stock { background: #fef2f2; color: #dc2626; }
+.status-low-stock { background: #fffbeb; color: #d97706; }
+.status-ok { background: #ecfdf5; color: #059669; }
+
+/* ============================================================
+   MESSAGES FLASH
+   ============================================================ */
+.messages-container {
+    margin-bottom: 1rem;
+}
+
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card {
+    animation: fadeInUp 0.4s ease-out both;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 991.98px) {
+    .main-content {
+        margin-left: 0;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .sidebar {
+        display: none !important;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+}

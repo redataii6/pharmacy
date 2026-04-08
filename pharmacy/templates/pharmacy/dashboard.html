@@ -1,0 +1,254 @@
+{% extends 'pharmacy/base.html' %}
+{% load pharmacy_tags %}
+{% load humanize %}
+
+{% comment %}
+============================================================
+Tableau de bord — Application de Gestion de Pharmacie
+============================================================
+Page d'accueil affichant les statistiques principales :
+- Nombre total de médicaments
+- Alertes de stock faible
+- Médicaments expirés / expirant bientôt
+- Statistiques de ventes (Admin uniquement)
+- Tableau des médicaments à surveiller
+============================================================
+{% endcomment %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-speedometer2 me-2"></i>Tableau de bord
+        </h1>
+        <p class="text-muted mb-0">
+            Bienvenue, <strong>{{ user.get_full_name|default:user.username }}</strong>.
+            Voici un aperçu de l'état de votre pharmacie.
+        </p>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CARTES DE STATISTIQUES                                        -->
+<!-- ============================================================ -->
+<div class="row g-4 mb-4">
+    <!-- Carte : Total des médicaments -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-capsule"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ total_medicaments }}</span>
+                    <span class="stat-label">Médicaments</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:medicament_list' %}" class="stat-card-footer">
+                Voir tout <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte : Stock faible -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stock_faible }}</span>
+                    <span class="stat-label">Stock faible</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:medicament_list' %}?filtre=stock_faible" class="stat-card-footer">
+                Voir détails <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte : Médicaments expirés -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-danger">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ medicaments_expires }}</span>
+                    <span class="stat-label">Expirés</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:medicament_list' %}?filtre=expires" class="stat-card-footer">
+                Voir détails <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte : Expirent bientôt -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-info">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ expire_bientot }}</span>
+                    <span class="stat-label">Expirent bientôt</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:medicament_list' %}?filtre=expire_bientot" class="stat-card-footer">
+                Voir détails <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- STATISTIQUES DE VENTES (Admin uniquement)                     -->
+<!-- ============================================================ -->
+{% if user|is_admin %}
+<div class="row g-4 mb-4">
+    <!-- Carte : Ventes du jour -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-success">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ ventes_aujourd_hui }}</span>
+                    <span class="stat-label">Ventes aujourd'hui</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:vente_list' %}" class="stat-card-footer">
+                Voir les ventes <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte : Chiffre d'affaires du jour -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-purple">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ chiffre_affaires_jour|floatformat:2 }}</span>
+                    <span class="stat-label">CA du jour (DH)</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:vente_list' %}" class="stat-card-footer">
+                Voir détails <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte : Total ventes -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-teal">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-bag-check"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ total_ventes }}</span>
+                    <span class="stat-label">Total ventes</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:vente_list' %}" class="stat-card-footer">
+                Historique <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte : CA total -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card stat-card-gold">
+            <div class="stat-card-body">
+                <div class="stat-icon">
+                    <i class="bi bi-currency-exchange"></i>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ chiffre_affaires_total|floatformat:2 }}</span>
+                    <span class="stat-label">CA total (DH)</span>
+                </div>
+            </div>
+            <a href="{% url 'pharmacy:vente_list' %}" class="stat-card-footer">
+                Voir détails <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ============================================================ -->
+<!-- TABLEAU DES MÉDICAMENTS À SURVEILLER                          -->
+<!-- ============================================================ -->
+<div class="card custom-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-exclamation-diamond me-2 text-warning"></i>
+            Médicaments à surveiller
+        </h5>
+        <a href="{% url 'pharmacy:medicament_list' %}" class="btn btn-sm btn-outline-primary">
+            Voir tout <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+    </div>
+    <div class="card-body p-0">
+        {% if medicaments_alertes %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Médicament</th>
+                        <th>Stock</th>
+                        <th>Date d'expiration</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for med in medicaments_alertes %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'pharmacy:medicament_detail' med.pk %}" class="text-decoration-none fw-semibold">
+                                {{ med.nom }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if med.stock_faible %}
+                                <span class="badge bg-warning text-dark">{{ med.stock }}</span>
+                            {% else %}
+                                <span class="badge bg-success">{{ med.stock }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ med.date_expiration|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if med.est_expire %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle me-1"></i>Expiré
+                                </span>
+                            {% elif med.expire_bientot %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-clock me-1"></i>Expire bientôt
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-check-circle fs-1 text-success"></i>
+            <p class="mt-2">Aucune alerte pour le moment. Tout est en ordre ! 🎉</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

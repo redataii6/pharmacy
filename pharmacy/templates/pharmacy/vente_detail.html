@@ -1,0 +1,100 @@
+{% extends 'pharmacy/base.html' %}
+
+{% comment %}
+Détail d'une vente — Admin uniquement
+{% endcomment %}
+
+{% block title %}Détail de la vente{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-receipt me-2"></i>Détail de la vente
+        </h1>
+        <p class="text-muted mb-0">Vente #{{ vente.pk }} — {{ vente.date_vente|date:"d/m/Y H:i" }}</p>
+    </div>
+    <a href="{% url 'pharmacy:vente_list' %}" class="btn btn-outline-primary">
+        <i class="bi bi-arrow-left me-1"></i> Retour aux ventes
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Informations de la vente</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Médicament</span>
+                            <span class="detail-value">
+                                <a href="{% url 'pharmacy:medicament_detail' vente.medicament.pk %}" class="text-decoration-none">
+                                    {{ vente.medicament.nom }}
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Quantité vendue</span>
+                            <span class="detail-value">{{ vente.quantite }} unités</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Prix unitaire</span>
+                            <span class="detail-value">{{ vente.prix_unitaire|floatformat:2 }} DH</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Remise appliquée</span>
+                            <span class="detail-value">
+                                {% if vente.remise > 0 %}
+                                    <span class="badge bg-info">-{{ vente.remise|floatformat:1 }}%</span>
+                                {% else %}
+                                    Aucune
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Date de vente</span>
+                            <span class="detail-value">{{ vente.date_vente|date:"d/m/Y à H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Vendeur</span>
+                            <span class="detail-value">{{ vente.vendeur.get_full_name|default:vente.vendeur.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-cash-stack me-2"></i>Récapitulatif</h5>
+            </div>
+            <div class="card-body text-center">
+                <p class="text-muted mb-1">Sous-total</p>
+                <h5>{{ vente.prix_unitaire|floatformat:2 }} × {{ vente.quantite }}</h5>
+                {% if vente.remise > 0 %}
+                <p class="text-muted mb-1 mt-3">Remise</p>
+                <h5 class="text-info">-{{ vente.remise|floatformat:1 }}%</h5>
+                {% endif %}
+                <hr>
+                <p class="text-muted mb-1">Montant total</p>
+                <h2 class="text-success fw-bold">{{ vente.montant_total|floatformat:2 }} DH</h2>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

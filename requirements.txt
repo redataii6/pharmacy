@@ -1,0 +1,8 @@
+# ============================================================
+# Dépendances du projet - Application de Gestion de Pharmacie
+# ============================================================
+# Framework web principal
+Django==4.2.17
+
+# Connecteur MySQL pour Django
+mysqlclient==2.2.6

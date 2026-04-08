@@ -1,0 +1,187 @@
+{% extends 'pharmacy/base.html' %}
+{% load pharmacy_tags %}
+
+{% comment %}
+============================================================
+Détail d'un médicament — Application de Gestion de Pharmacie
+============================================================
+Affiche toutes les informations d'un médicament spécifique.
+Si l'utilisateur est Admin, affiche également les ventes liées.
+============================================================
+{% endcomment %}
+
+{% block title %}{{ medicament.nom }}{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-capsule me-2"></i>{{ medicament.nom }}
+        </h1>
+        <p class="text-muted mb-0">Détails du médicament</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'pharmacy:medicament_update' medicament.pk %}" class="btn btn-outline-secondary">
+            <i class="bi bi-pencil me-1"></i> Modifier
+        </a>
+        {% if user|is_admin %}
+        <a href="{% url 'pharmacy:medicament_delete' medicament.pk %}" class="btn btn-outline-danger">
+            <i class="bi bi-trash me-1"></i> Supprimer
+        </a>
+        {% endif %}
+        <a href="{% url 'pharmacy:medicament_list' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-1"></i> Retour
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Informations principales -->
+    <div class="col-lg-8">
+        <div class="card custom-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Informations générales</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Nom</span>
+                            <span class="detail-value">{{ medicament.nom }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Prix unitaire</span>
+                            <span class="detail-value text-primary fw-bold">{{ medicament.prix|floatformat:2 }} DH</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Stock disponible</span>
+                            <span class="detail-value">
+                                {% if medicament.stock == 0 %}
+                                    <span class="badge bg-danger fs-6">Rupture de stock</span>
+                                {% elif medicament.stock_faible %}
+                                    <span class="badge bg-warning text-dark fs-6">
+                                        <i class="bi bi-exclamation-triangle me-1"></i>{{ medicament.stock }} unités
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success fs-6">{{ medicament.stock }} unités</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Date d'expiration</span>
+                            <span class="detail-value">
+                                {{ medicament.date_expiration|date:"d/m/Y" }}
+                                {% if medicament.est_expire %}
+                                    <span class="badge bg-danger ms-2">Expiré</span>
+                                {% elif medicament.expire_bientot %}
+                                    <span class="badge bg-warning text-dark ms-2">Expire bientôt</span>
+                                {% else %}
+                                    <span class="badge bg-success ms-2">Valide</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% if medicament.description %}
+                    <div class="col-12">
+                        <div class="detail-item">
+                            <span class="detail-label">Description</span>
+                            <span class="detail-value">{{ medicament.description }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <span class="detail-label">Date d'ajout</span>
+                            <span class="detail-value text-muted">{{ medicament.date_ajout|date:"d/m/Y H:i" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panneau latéral -->
+    <div class="col-lg-4">
+        <!-- Statut -->
+        <div class="card custom-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-activity me-2"></i>Statut</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if medicament.est_expire %}
+                <div class="status-badge status-expired">
+                    <i class="bi bi-x-circle fs-1"></i>
+                    <p class="mt-2 fw-bold mb-0">Expiré</p>
+                    <small class="text-muted">Ce médicament ne peut plus être vendu.</small>
+                </div>
+                {% elif medicament.stock == 0 %}
+                <div class="status-badge status-out-of-stock">
+                    <i class="bi bi-box fs-1"></i>
+                    <p class="mt-2 fw-bold mb-0">Rupture de stock</p>
+                    <small class="text-muted">Veuillez réapprovisionner.</small>
+                </div>
+                {% elif medicament.stock_faible %}
+                <div class="status-badge status-low-stock">
+                    <i class="bi bi-exclamation-triangle fs-1"></i>
+                    <p class="mt-2 fw-bold mb-0">Stock faible</p>
+                    <small class="text-muted">Seulement {{ medicament.stock }} unités restantes.</small>
+                </div>
+                {% else %}
+                <div class="status-badge status-ok">
+                    <i class="bi bi-check-circle fs-1"></i>
+                    <p class="mt-2 fw-bold mb-0">Disponible</p>
+                    <small class="text-muted">{{ medicament.stock }} unités en stock.</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- HISTORIQUE DES VENTES LIÉES (Admin uniquement)                -->
+<!-- ============================================================ -->
+{% if user|is_admin and ventes %}
+<div class="card custom-card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="bi bi-clock-history me-2"></i>Dernières ventes de ce médicament
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Quantité</th>
+                        <th>Prix unitaire</th>
+                        <th>Remise</th>
+                        <th>Montant total</th>
+                        <th>Vendeur</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vente in ventes %}
+                    <tr>
+                        <td>{{ vente.date_vente|date:"d/m/Y H:i" }}</td>
+                        <td>{{ vente.quantite }}</td>
+                        <td>{{ vente.prix_unitaire|floatformat:2 }} DH</td>
+                        <td>{{ vente.remise|floatformat:2 }}%</td>
+                        <td class="fw-bold">{{ vente.montant_total|floatformat:2 }} DH</td>
+                        <td>{{ vente.vendeur.username }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

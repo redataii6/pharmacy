@@ -1,0 +1,112 @@
+{% extends 'pharmacy/base.html' %}
+
+{% comment %}
+Formulaire de vente — Admin uniquement
+{% endcomment %}
+
+{% block title %}Nouvelle vente{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-cart-plus me-2"></i>Enregistrer une vente
+        </h1>
+        <p class="text-muted mb-0">Sélectionnez un médicament et renseignez les détails de la vente.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card custom-card">
+            <div class="card-body p-4">
+                <form method="post" novalidate id="form_vente">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Médicament -->
+                    <div class="mb-3">
+                        <label for="id_medicament" class="form-label fw-semibold">
+                            <i class="bi bi-capsule me-1"></i> Médicament <span class="text-danger">*</span>
+                        </label>
+                        {{ form.medicament }}
+                        {% if form.medicament.errors %}
+                        <div class="invalid-feedback d-block">{% for e in form.medicament.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                        <small class="text-muted" id="stock_info"></small>
+                    </div>
+
+                    <div class="row">
+                        <!-- Quantité -->
+                        <div class="col-md-6 mb-3">
+                            <label for="id_quantite" class="form-label fw-semibold">
+                                <i class="bi bi-123 me-1"></i> Quantité <span class="text-danger">*</span>
+                            </label>
+                            {{ form.quantite }}
+                            {% if form.quantite.errors %}
+                            <div class="invalid-feedback d-block">{% for e in form.quantite.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Prix unitaire -->
+                        <div class="col-md-6 mb-3">
+                            <label for="id_prix_unitaire" class="form-label fw-semibold">
+                                <i class="bi bi-currency-exchange me-1"></i> Prix unitaire (DH) <span class="text-danger">*</span>
+                            </label>
+                            {{ form.prix_unitaire }}
+                            {% if form.prix_unitaire.errors %}
+                            <div class="invalid-feedback d-block">{% for e in form.prix_unitaire.errors %}{{ e }}{% endfor %}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Remise -->
+                    <div class="mb-3">
+                        <label for="id_remise" class="form-label fw-semibold">
+                            <i class="bi bi-percent me-1"></i> Remise (%)
+                        </label>
+                        {{ form.remise }}
+                        {% if form.remise.errors %}
+                        <div class="invalid-feedback d-block">{% for e in form.remise.errors %}{{ e }}{% endfor %}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Montant total calculé -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body text-center">
+                            <span class="text-muted">Montant total estimé :</span>
+                            <h3 class="text-primary mb-0" id="montant_total_display">0.00 DH</h3>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary-custom" id="btn_submit_vente">
+                            <i class="bi bi-check-lg me-1"></i> Enregistrer la vente
+                        </button>
+                        <a href="{% url 'pharmacy:vente_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg me-1"></i> Annuler
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Données des prix des médicaments pour le calcul dynamique
+const medicamentPrices = {};
+{% for med in form.medicament.field.queryset %}
+medicamentPrices[{{ med.pk }}] = { prix: {{ med.prix }}, stock: {{ med.stock }}, nom: "{{ med.nom }}" };
+{% endfor %}
+</script>
+{% endblock %}
