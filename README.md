@@ -361,3 +361,5 @@ project_rech/
 ## 📄 Licence
 
 Projet universitaire — EMSI © 2026. Usage académique uniquement.
+
+# pharmacy
